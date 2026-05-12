@@ -1,0 +1,7 @@
+interface:
+  display_name: "嵌入式鲁棒性审查"
+  short_description: "合并前审查嵌入式固件的稳定性、并发、协议和硬件风险。"
+  default_prompt: "使用 $embedded-pr-robustness-review 审查这个嵌入式固件 PR 的鲁棒性风险。"
+
+policy:
+  allow_implicit_invocation: true

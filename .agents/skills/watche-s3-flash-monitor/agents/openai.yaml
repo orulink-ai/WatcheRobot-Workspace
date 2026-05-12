@@ -1,0 +1,7 @@
+interface:
+  display_name: "S3 烧录监控"
+  short_description: "烧录 WatcheRobot S3 固件前清理串口占用，并按需监控日志。"
+  default_prompt: "使用 $watche-s3-flash-monitor 清理目标串口、烧录 WatcheRobot S3 固件并按需监控串口输出。"
+
+policy:
+  allow_implicit_invocation: true

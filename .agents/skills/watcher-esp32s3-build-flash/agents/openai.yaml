@@ -1,0 +1,7 @@
+interface:
+  display_name: "ESP32-S3 底层排障"
+  short_description: "排查 ESP-IDF 构建、产物、端口验证和 esptool 烧录细节。"
+  default_prompt: "使用 $watcher-esp32s3-build-flash 排查 WatcheRobot ESP32-S3 源码构建或烧录失败。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,9 @@
+[submodule "WatcheRobot_esp32"]
+	path = WatcheRobot_esp32
+	url = https://github.com/Ro-In-AI/WatcheRobot-Firmware.git
+	branch = main
+
+[submodule "WatcheRobot_stm32"]
+	path = WatcheRobot_stm32
+	url = https://github.com/Ro-In-AI/watcherobot_stm32.git
+	branch = dev

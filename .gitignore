@@ -1,0 +1,23 @@
+# Local machine configuration
+.codex/local/
+**/.codex/local/
+
+# Runtime logs and browser verification artifacts
+.playwright-mcp/
+*.log
+*.tmp
+*.bak
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Keep nested firmware repositories as gitlinks/submodules.
+!WatcheRobot_esp32/
+!WatcheRobot_stm32/

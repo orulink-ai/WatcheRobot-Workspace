@@ -1,0 +1,10 @@
+# Copy to `.codex/local/device-map.toml` and edit for each machine.
+# Keep aliases stable across the team. Only local COM ports should change.
+
+[devices.esp32-s3]
+firmware = "s3"
+port = "COM23"
+
+[devices.stm32-f103]
+firmware = "stm32"
+port = "COM18"

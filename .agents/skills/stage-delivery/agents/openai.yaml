@@ -1,0 +1,7 @@
+interface:
+  display_name: "阶段性交付"
+  short_description: "按 TDD 验收阶段成果，提交中文 commit、push 并创建 draft PR。"
+  default_prompt: "使用 $stage-delivery 检查当前改动，补齐必要验证与文档，然后提交中文 commit、push 分支并创建 draft PR。"
+
+policy:
+  allow_implicit_invocation: true

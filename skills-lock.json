@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "embedded-pr-robustness-review": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/embedded-pr-robustness-review/SKILL.md",
+      "computedHash": "50b7e41186ceffec343cff457cfe7003a38240729a0e2777cacab471d1d56f30"
+    },
+    "skill-authoring": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/_meta/skill-authoring/SKILL.md",
+      "computedHash": "7d216ef3fb562fb916cb075586c029ba7d20c406acfd024551d127de5bfe6bd4"
+    },
+    "stage-delivery": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/software-engineering/stage-delivery/SKILL.md",
+      "computedHash": "ef3361c93a1ef7003d74dcb072420101cf5853837bbcab9c1eba8df03f48f087"
+    },
+    "watche-design-animation-import": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/watche-design-animation-import/SKILL.md",
+      "computedHash": "9e66ec403289a7e863da79ff320b34ed5b8f9a8415cd063218275ccd439fb5fb"
+    },
+    "watche-dual-mcu-bringup": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/watche-dual-mcu-bringup/SKILL.md",
+      "computedHash": "de2e8d87cec1853c177c130b06a03494062e4e09b99719510a78527d71c8620c"
+    },
+    "watche-s3-flash-monitor": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/watche-s3-flash-monitor/SKILL.md",
+      "computedHash": "d9b55b68b2830c1f97c5dd57e7991e589f1cf914bc4d9aeba1b1605c54ab02cb"
+    },
+    "watche-s3-release-binary-flash": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/watche-s3-release-binary-flash/SKILL.md",
+      "computedHash": "734e1ab292820758db78d5a9a78d5daf87f3cda4fa79654bd10bef9e2b3ef75f"
+    },
+    "watcher-esp32s3-build-flash": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/watcher-esp32s3-build-flash/SKILL.md",
+      "computedHash": "94a8c42ab8febeb4ef4fc6f89a3f7d2e83ea320e3bab811863fcef27efc42fee"
+    },
+    "watcher-stm32-build-flash": {
+      "source": "orulink-ai/orulink-skills-hub",
+      "sourceType": "github",
+      "skillPath": "skills/embedded/watcher-stm32-build-flash/SKILL.md",
+      "computedHash": "8cfe253c803c068fed7e24dcb28415fbc41b9bb1900b92fef5e94e60041e1565"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Skill 创建规范"
+  short_description: "创建、归类、审核和维护项目 skill 的中文规范。"
+  default_prompt: "使用 $skill-authoring 创建、归类或审核这个项目的 skill。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WatcheRobot SkillHub</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #18202a;
+      --muted: #5e6a78;
+      --line: #d9dee6;
+      --accent: #146c5f;
+      --accent-soft: #e4f3ef;
+      --warn: #8a5a00;
+      --warn-soft: #fff3d6;
+      --info: #315f9b;
+      --info-soft: #e6eefb;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.5;
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+    .wrap {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+    .hero {
+      padding: 28px 0 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+    .updated {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    main { padding: 22px 0 40px; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    section h2 {
+      margin: 0;
+      padding: 16px 18px;
+      font-size: 18px;
+      border-bottom: 1px solid var(--line);
+      letter-spacing: 0;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-height: 94px;
+    }
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .toolbar {
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+    }
+    .legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .keep { background: var(--accent-soft); color: var(--accent); border-color: #b9ddd4; }
+    .adjust { background: var(--warn-soft); color: var(--warn); border-color: #ead39b; }
+    .manual { background: var(--info-soft); color: var(--info); border-color: #bdd1ef; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .table-shell {
+      overflow-x: auto;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      background: #fbfcfd;
+    }
+    tr:last-child td { border-bottom: 0; }
+    a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 13px;
+      background: #f0f2f5;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+    .note {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .note h3 { margin: 0 0 8px; font-size: 15px; }
+    .note p { margin: 0; color: var(--muted); }
+    .list {
+      padding: 14px 18px 18px;
+      margin: 0;
+    }
+    .list li { margin: 7px 0; }
+    @media (max-width: 860px) {
+      .hero, .toolbar { grid-template-columns: 1fr; }
+      .summary, .cards { grid-template-columns: 1fr; }
+      .updated { white-space: normal; }
+      table { font-size: 13px; }
+      #skill-table { min-width: 980px; }
+      th, td { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>WatcheRobot SkillHub</h1>
+        <p class="subtitle">项目级 Codex skills 总览：职责、边界、默认入口、脚本化程度和多人协作注意事项。</p>
+      </div>
+      <div class="updated">更新日期：2026-05-13</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>总览</h2>
+      <div class="summary">
+        <div class="metric"><strong>10</strong><span>项目级 skills</span></div>
+        <div class="metric"><strong>5</strong><span>硬件 / 固件执行类</span></div>
+        <div class="metric"><strong>3</strong><span>工程流程治理类</span></div>
+        <div class="metric"><strong>0</strong><span>默认依赖个人绝对路径</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Skills 清单</h2>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="搜索 skill、职责、边界或关键词">
+        <div class="legend">
+          <span class="pill keep">主入口</span>
+          <span class="pill adjust">辅助 / 排障</span>
+          <span class="pill manual">治理</span>
+        </div>
+      </div>
+      <div class="table-shell">
+      <table id="skill-table">
+        <thead>
+          <tr>
+            <th>Skill</th>
+            <th>定位</th>
+            <th>什么时候用</th>
+            <th>不要用于</th>
+            <th>脚本 / 入口</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="../skills/watche-s3-flash-monitor/SKILL.md">watche-s3-flash-monitor</a></td>
+            <td>ESP32-S3 源码烧录主入口</td>
+            <td>烧录、刷机、清占口、按需 monitor 当前源码构建产物。</td>
+            <td>release ZIP 烧录；双 MCU 联调；底层手写 esptool 排障。</td>
+            <td><code>firmware/s3/flash-monitor.cmd</code><br><code>scripts/close-com-port.ps1</code></td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/watche-s3-release-binary-flash/SKILL.md">watche-s3-release-binary-flash</a></td>
+            <td>ESP32-S3 release ZIP 烧录</td>
+            <td>不编译源码，直接烧录打包好的发布二进制。</td>
+            <td>源码构建、源码 flash monitor、双 MCU 联调。</td>
+            <td><code>scripts/invoke-release-flash.ps1</code><br><code>tools/flash-release.cmd</code></td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/watcher-esp32s3-build-flash/SKILL.md">watcher-esp32s3-build-flash</a></td>
+            <td>ESP32-S3 底层构建 / 烧录排障</td>
+            <td>ESP-IDF 环境、构建产物、依赖、端口验证或 esptool 细节出问题时。</td>
+            <td>普通“帮我烧一下 ESP32”请求。</td>
+            <td>手册型，无默认执行脚本；优先回到项目 wrapper。</td>
+            <td><span class="pill adjust">辅助 / 排障</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/watcher-stm32-build-flash/SKILL.md">watcher-stm32-build-flash</a></td>
+            <td>STM32F103 构建烧录</td>
+            <td>构建 STM32 固件，通过 ST-LINK/OpenOCD 烧录和验证。</td>
+            <td>ESP32 烧录；双串口合并日志。</td>
+            <td><code>cmake --preset Debug</code><br><code>openocd ... program</code></td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/watche-dual-mcu-bringup/SKILL.md">watche-dual-mcu-bringup</a></td>
+            <td>ESP32 + STM32 双 MCU 联调</td>
+            <td>两边都接好后，构建、烧录、重启、抓合并串口日志。</td>
+            <td>只烧 ESP32；只烧 release ZIP；只做代码 review。</td>
+            <td><code>scripts/run-dual-mcu-bringup.ps1</code><br><code>tools/stm32_bringup_session.py</code></td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/watche-design-animation-import/SKILL.md">watche-design-animation-import</a></td>
+            <td>设计动画导入</td>
+            <td>从设计 GIF / 飞书映射导入动画，生成 AnimPack 和 SD 资源。</td>
+            <td>固件烧录；代码审查；发布 PR 收尾。</td>
+            <td><code>scripts/import_watcher_design_anims.py</code></td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/embedded-pr-robustness-review/SKILL.md">embedded-pr-robustness-review</a></td>
+            <td>嵌入式 PR 鲁棒性审查</td>
+            <td>审查固件 PR 的内存、并发、协议、硬件和恢复风险。</td>
+            <td>直接修改代码；阶段提交；硬件烧录执行。</td>
+            <td><code>scripts/collect_pr_review_context.py</code></td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/stage-delivery/SKILL.md">stage-delivery</a></td>
+            <td>阶段性交付</td>
+            <td>完成一个阶段后整理验证、文档、中文 commit、push 和 draft PR。</td>
+            <td>还在探索或未完成的实现；只想看硬件日志。</td>
+            <td>流程型 skill，无项目脚本。</td>
+            <td><span class="pill keep">主入口</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/skill-evaluation/SKILL.md">skill-evaluation</a></td>
+            <td>Skill 适配评估</td>
+            <td>讨论某个 skill 是否保留、修改、合并、废弃或脚本化。</td>
+            <td>普通固件开发任务。</td>
+            <td><code>references/evaluation-rubric.md</code></td>
+            <td><span class="pill manual">治理</span></td>
+          </tr>
+          <tr>
+            <td><a href="../skills/skill-authoring/SKILL.md">skill-authoring</a></td>
+            <td>Skill 创建规范</td>
+            <td>创建、归类、审核、迁移或废弃项目 skills。</td>
+            <td>评估某个现有 skill 的执行边界；这时用 skill-evaluation。</td>
+            <td><code>references/</code><br><code>assets/templates/SKILL.md</code></td>
+            <td><span class="pill manual">治理</span></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>边界速查</h2>
+      <div class="cards">
+        <div class="note">
+          <h3>ESP32 相关</h3>
+          <p>源码烧录用 <code>watche-s3-flash-monitor</code>；release ZIP 用 <code>watche-s3-release-binary-flash</code>；wrapper 失败后才看 <code>watcher-esp32s3-build-flash</code>。</p>
+        </div>
+        <div class="note">
+          <h3>双 MCU 相关</h3>
+          <p>只有 ESP32 和 STM32 都接入、需要联调日志或 UART2 握手诊断时，用 <code>watche-dual-mcu-bringup</code>。</p>
+        </div>
+        <div class="note">
+          <h3>团队本机配置</h3>
+          <p>端口、设计盘符、ESP-IDF Python 环境等本机事实不要写进 skill；使用 <code>.codex/local</code>、环境变量或运行时参数。</p>
+        </div>
+        <div class="note">
+          <h3>治理类</h3>
+          <p>创建 skill 用 <code>skill-authoring</code>；评估和整理现有 skill 用 <code>skill-evaluation</code>；交付代码阶段用 <code>stage-delivery</code>。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>本次规范化结果</h2>
+      <ul class="list">
+        <li>默认 ESP32 设备别名统一为 <code>esp32-s3</code>，STM32 设备别名统一为 <code>stm32-f103</code>。</li>
+        <li>项目 skills 不再默认依赖个人绝对路径；统一使用 <code>&lt;workspace-root&gt;</code>、<code>&lt;esp32-root&gt;</code>、环境变量或参数。</li>
+        <li>ESP32 普通烧录和底层排障分离，减少 <code>watche-s3-flash-monitor</code> 与 <code>watcher-esp32s3-build-flash</code> 的选择冲突。</li>
+        <li>设计动画导入脚本支持从当前工作区或 <code>WATCHE_S3_FIRMWARE_ROOT</code> 自动发现固件根目录。</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const search = document.getElementById('search');
+    const rows = Array.from(document.querySelectorAll('#skill-table tbody tr'));
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      for (const row of rows) {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+      }
+    });
+  </script>
+</body>
+</html>

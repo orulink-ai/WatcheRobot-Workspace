@@ -1,0 +1,7 @@
+interface:
+  display_name: "S3 Release 烧录"
+  short_description: "不编译源码，直接烧录 WatcheRobot S3 release ZIP 二进制包。"
+  default_prompt: "使用 $watche-s3-release-binary-flash 把 WatcheRobot S3 release ZIP 烧录到指定 COM 口。"
+
+policy:
+  allow_implicit_invocation: true

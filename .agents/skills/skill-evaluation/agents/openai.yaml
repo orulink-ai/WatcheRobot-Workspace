@@ -1,0 +1,7 @@
+interface:
+  display_name: "Skill 评估"
+  short_description: "评估 skill 适配度、边界和脚本化程度。"
+  default_prompt: "使用 $skill-evaluation 评估这个项目 skill 是否适合保留、调整或脚本化。"
+
+policy:
+  allow_implicit_invocation: true

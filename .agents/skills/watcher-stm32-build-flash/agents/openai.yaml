@@ -1,0 +1,7 @@
+interface:
+  display_name: "STM32 构建烧录"
+  short_description: "构建并通过 ST-LINK/OpenOCD 烧录 WatcheRobot STM32F103 固件。"
+  default_prompt: "使用 $watcher-stm32-build-flash 构建并烧录 WatcheRobot STM32 固件。"
+
+policy:
+  allow_implicit_invocation: true

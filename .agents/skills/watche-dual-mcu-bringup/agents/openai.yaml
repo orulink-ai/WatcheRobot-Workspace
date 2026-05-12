@@ -1,0 +1,7 @@
+interface:
+  display_name: "双 MCU 联调"
+  short_description: "按需编译、烧录、重启并采集 ESP32 + STM32 联调日志。"
+  default_prompt: "使用 $watche-dual-mcu-bringup 构建、烧录、重启或采集 WatcheRobot 双 MCU 合并串口日志。"
+
+policy:
+  allow_implicit_invocation: true
