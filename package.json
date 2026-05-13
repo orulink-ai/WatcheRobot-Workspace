@@ -1,0 +1,13 @@
+{
+  "name": "watche-robot-firmware-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "stm32": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/flash-stm32.ps1",
+    "stm32:monitor": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/monitor-stm32.ps1",
+    "esp32:build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-esp32.ps1",
+    "esp32": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/flash-esp32.ps1",
+    "esp32:monitor": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/monitor-esp32.ps1",
+    "ports": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/list-ports.ps1"
+  }
+}
