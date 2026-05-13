@@ -47,6 +47,44 @@ powershell -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\pull-all.ps1
 ```
 
+列出本机串口：
+
+```powershell
+yarn ports
+```
+
+构建并烧录 STM32 Debug 固件：
+
+```powershell
+yarn stm32
+```
+
+查看 STM32 本地 CLI / USART1 日志：
+
+```powershell
+yarn stm32:monitor COM18
+```
+
+构建并烧录 ESP32-S3 固件：
+
+```powershell
+yarn esp32 COM23
+```
+
+查看 ESP32-S3 日志。默认使用 `idf.py monitor --force-color`，会按 ESP-IDF 日志等级显示颜色：
+
+```powershell
+yarn esp32:monitor COM23
+```
+
+如果只需要普通串口直读，可以使用 raw 模式：
+
+```powershell
+yarn esp32:monitor COM23 -Raw
+```
+
+配置 `.codex/local/device-map.toml` 后，`yarn stm32:monitor`、`yarn esp32` 和 `yarn esp32:monitor` 可以省略 COM 口。
+
 打开 SkillHub：
 
 ```text

@@ -63,6 +63,7 @@ description: ESP32-S3 源码构建/烧录的底层排障指南。常规一键烧
 - 构建输出：`<project-root>\firmware\s3\build`
 - Release 资源：`<project-root>\firmware\s3\release`
 - Windows helper：`<project-root>\firmware\s3\flash-monitor.cmd`
+- Workspace build helper：`<workspace-root>\scripts\build-esp32.ps1`
 
 ## 定位项目
 
@@ -105,6 +106,37 @@ $IsWindows = $true
 . "<export-script>"
 ```
 
+### Windows Python 环境选择
+
+在 Codex 或普通 PowerShell 中，`python` 可能优先指向 Anaconda、Scoop 或 WindowsApps。ESP-IDF 的 `export.ps1` 会按当前 Python 版本推导 `IDF_PYTHON_ENV_PATH`，如果它指向不存在的目录，例如 `C:\Espressif\python_env\idf5.2_py3.12_env`，会报：
+
+```text
+python.exe doesn't exist
+Cannot import module "esp_idf_monitor"
+```
+
+这不代表 ESP-IDF 项目坏了。先检查：
+
+```powershell
+where.exe python
+Get-ChildItem C:\Espressif\python_env -Directory
+```
+
+如果存在 `idf5.2_py3.11_env` 或其他可用 venv，优先显式设置并验证：
+
+```powershell
+$env:IDF_PYTHON_ENV_PATH = "C:\Espressif\python_env\idf5.2_py3.11_env"
+& "$env:IDF_PYTHON_ENV_PATH\Scripts\python.exe" -c "import esp_idf_monitor"
+. "<export-script>"
+idf.py --version
+```
+
+在本 workspace 中，优先使用项目脚本自动完成该选择：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<workspace-root>\scripts\build-esp32.ps1" -DryRun
+```
+
 如果依赖解析失败，或 `IDF_COMPONENT_REGISTRY_URL` 指向 `file:///C:/Espressif/registry;default`，先清掉当前 shell 的错误覆盖：
 
 ```powershell
@@ -126,12 +158,15 @@ Remove-Item Env:\IDF_COMPONENT_STORAGE_URL -ErrorAction SilentlyContinue
 在 `<project-dir>` 下运行：
 
 ```powershell
-cd "<project-root>\firmware\s3"
-idf.py set-target esp32s3
-idf.py build
+powershell -NoProfile -ExecutionPolicy Bypass -File "<workspace-root>\scripts\build-esp32.ps1"
 ```
 
-`idf.py set-target esp32s3` 会配置芯片目标，可能重生成 `sdkconfig`。干净工程或切换目标后通常需要执行一次。
+该 workspace helper 默认构建 V2 no-wake 产物，输出到 `<project-root>\firmware\s3\build-no-wake`，并自动处理 ESP-IDF Python venv 选择。需要手动底层排障时再进入 `<project-dir>` 运行：
+
+```powershell
+cd "<project-root>\firmware\s3"
+idf.py -B build-no-wake build
+```
 
 构建成功会输出 `Project build complete. To flash, run:`。预期产物：
 
