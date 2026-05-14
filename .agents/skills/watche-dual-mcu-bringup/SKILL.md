@@ -14,6 +14,7 @@ description: 在当前项目 checkout 中构建、烧录、重启并验证 Watch
 - 用户想在 `.codex/local/logs/` 下采集一次新的双串口 session。
 - 用户想诊断为什么缺少 `MCU_OBS` 或 `STM32_OBS`。
 - 用户想验证 ESP32 到 STM32 的 UART2 流量是否到达。
+- 用户明确要看 STM32 结构化观测日志时，STM32 固件应使用 `Engineering` preset。
 
 ## 台架默认值
 
@@ -41,6 +42,7 @@ powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bring
 powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bringup.ps1" -SkipStm32Build -SkipStm32Flash
 powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bringup.ps1" -SkipEsp32Flash
 powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bringup.ps1" -RestartStm32 -RestartEsp32
+powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bringup.ps1" -Stm32Preset Engineering -DurationSec 30
 ```
 
 ## 自然语言映射
@@ -61,11 +63,12 @@ powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bring
 - `只重启`：`-SkipStm32Build -SkipEsp32Build -SkipStm32Flash -SkipEsp32Flash -RestartStm32 -RestartEsp32 -SkipSession`
 - `重启两边然后抓 20 秒日志`：`-SkipStm32Build -SkipEsp32Build -SkipStm32Flash -SkipEsp32Flash -RestartStm32 -RestartEsp32 -DurationSec 20`
 - `只编译 STM32，重启 ESP32`：`-SkipEsp32Build -SkipStm32Flash -SkipEsp32Flash -RestartEsp32 -SkipSession`
+- `抓 STM32_OBS` / `看 STM32 结构化观测`：添加 `-Stm32Preset Engineering`，不要用默认安静 `Debug` 固件判断 `STM32_OBS` 缺失。
 
 ## 标准流程
 
 1. 从设备映射解析 `esp32-s3` 和 `stm32-f103`。映射缺失或过期时，询问用户当前 ESP32 和 STM32 的 COM 口。
-2. 用 `cmake --preset Debug` 和 `cmake --build --preset Debug` 构建 STM32。
+2. 默认用 `cmake --preset Debug` 和 `cmake --build --preset Debug` 构建 STM32；如果用户要 `STM32_OBS` 或协议观测，改用 `-Stm32Preset Engineering`。
 3. 用 `idf.py -B build-esp32s3-local build` 构建 ESP32。
 4. 用 OpenOCD + `interface/stlink.cfg` + `target/stm32f1x.cfg` 烧录 STM32。
 5. 必要时释放 ESP32 串口，然后用 `firmware\s3\tools\flash-monitor.ps1 -NoBuild` 烧录 ESP32。
@@ -91,6 +94,7 @@ powershell -ExecutionPolicy Bypass -File "<skill-dir>\scripts\run-dual-mcu-bring
 
 - session 成功但不清楚含义时，读取 `references/expected-events.md`。
 - 烧录或采集失败时，读取 `references/known-failures.md`。
+- 默认 `Debug` STM32 固件是安静模式，可能没有 `STM32_OBS`。需要 `STM32_OBS` 时重新使用 `-Stm32Preset Engineering` 构建和烧录。
 
 ## 端口配置
 
