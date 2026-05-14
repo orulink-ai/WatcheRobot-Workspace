@@ -1,6 +1,10 @@
 # Local machine configuration
 .codex/local/
 **/.codex/local/
+.env
+.env.*
+!.env.example
+!**/.env.example
 
 # Runtime logs and browser verification artifacts
 .playwright-mcp/
@@ -17,7 +21,21 @@ Thumbs.db
 # Python cache
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
 
-# Keep nested firmware repositories as gitlinks/submodules.
+# Node/package-manager caches
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+
+# Keep nested product repositories as gitlinks/submodules.
 !WatcheRobot_esp32/
 !WatcheRobot_stm32/
+!WatcheRobot_app/
+!WatcheRobot_client/
+!WatcheRobot_server/

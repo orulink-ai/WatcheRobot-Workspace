@@ -1,0 +1,4 @@
+interface:
+  display_name: "Watche Project Onboarding"
+  short_description: "带新人了解 WatcheRobot 固件项目并持续沉淀 SOP 缺口。"
+  default_prompt: "带我完成 WatcheRobot 固件项目的新手引导，讲清楚项目结构、关键工作流、常用 skill、实操检查点，并在结束时把高复用问题自动沉淀回 onboarding SOP。"

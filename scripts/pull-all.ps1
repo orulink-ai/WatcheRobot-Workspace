@@ -7,16 +7,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $workspaceRoot = Split-Path -Parent $PSScriptRoot
-
-$repos = @(
-    [pscustomobject]@{ Name = "workspace"; Path = $workspaceRoot },
-    [pscustomobject]@{ Name = "esp32"; Path = Join-Path $workspaceRoot "WatcheRobot_esp32" },
-    [pscustomobject]@{ Name = "stm32"; Path = Join-Path $workspaceRoot "WatcheRobot_stm32" }
-)
+. "$PSScriptRoot\workspace-repos.ps1"
+$repos = Get-WatcheWorkspaceRepositories -WorkspaceRoot $workspaceRoot
 
 foreach ($repo in $repos) {
     Write-Host ""
-    Write-Host "== $($repo.Name): $($repo.Path) =="
+    Write-Host "== $($repo.Name) [$($repo.Kind)]: $($repo.Path) =="
 
     if (-not (Test-Path (Join-Path $repo.Path ".git"))) {
         Write-Host "not a git repo; skipped"
