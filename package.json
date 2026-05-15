@@ -12,6 +12,7 @@
     "esp32:build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-esp32.ps1",
     "esp32": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/flash-esp32.ps1",
     "esp32:monitor": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/monitor-esp32.ps1",
+    "android": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/android-app.ps1",
     "app:start": "yarn --cwd WatcheRobot_app start",
     "app:android": "yarn --cwd WatcheRobot_app android",
     "app:ios": "yarn --cwd WatcheRobot_app ios",
