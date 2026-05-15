@@ -1,0 +1,7 @@
+interface:
+  display_name: "STM32 日志模式"
+  short_description: "切换 WatcheRobot STM32 安静、工程观测和压测日志模式。"
+  default_prompt: "使用 $watche-stm32-log-modes 判断或调整 STM32 串口日志模式。"
+
+policy:
+  allow_implicit_invocation: true

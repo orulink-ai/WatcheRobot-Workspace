@@ -1,50 +1,89 @@
-# WatcheRobot Firmware Workspace
+# WatcheRobot-Workspace
 
-这个目录是 WatcheRobot 固件开发的 workspace/meta repo，用来统一管理项目级配置、Codex skills、SkillHub 和多仓库协作脚本。
+这个仓库是 WatcheRobot 项目的 workspace/meta repo，用来统一管理项目级配置、Codex skills、workspace 脚本、文档和多个产品子仓库的入口。
+
+根仓库不直接混合各子项目源码提交。App、桌面端、服务端、ESP32 固件、STM32 固件都按独立 Git 仓库管理；根仓库负责记录它们的位置、常用命令和协作边界。
+
+当前采用“submodule/gitlink 组合式 monorepo”组织方式：根仓库统一入口和项目级自动化，各产品子仓库保留独立历史、分支和发布节奏。
 
 ## 目录结构
 
 ```text
-watcheRobot_Firmware/
+WatcheRobot-Workspace/
   .agents/
-    skills/       # 项目级 Codex skills
-    skillhub/     # 可视化 SkillHub 页面
+    skills/                 # 项目级 Codex skills
+    skillhub/               # 可视化 SkillHub 页面
   .codex/
     device-map.example.toml
-    local/        # 本机端口和临时配置，不提交
-  scripts/
-    status-all.ps1
-    validate-skills.ps1
-    pull-all.ps1
-  WatcheRobot_esp32/  # ESP32 独立 Git 仓库
-  WatcheRobot_stm32/  # STM32 独立 Git 仓库
+    local/                  # 本机端口和临时配置，不提交
+  scripts/                  # workspace 级脚本，子仓库清单在 workspace-repos.ps1
+  WatcheRobot_app/          # React Native App 客户端，独立 Git 仓库
+  WatcheRobot_client/       # Tauri 桌面客户端，独立 Git 仓库
+  WatcheRobot_server/       # Python 服务端，独立 Git 仓库
+  WatcheRobot_esp32/        # ESP32-S3 固件，独立 Git 仓库
+  WatcheRobot_stm32/        # STM32F103 固件，独立 Git 仓库
 ```
+
+## 子仓库
+
+| 模块 | 路径 | 说明 | 默认分支 |
+| --- | --- | --- | --- |
+| Workspace | `.` | 项目级配置、脚本、文档和 submodule/gitlink 管理 | 当前分支 |
+| Mobile App | `WatcheRobot_app` | React Native 蓝牙控制 App | `dev` |
+| Desktop App | `WatcheRobot_client` | Tauri 桌面客户端 | `main` |
+| Server | `WatcheRobot_server` | Python WebSocket/AI 服务端 | `main` |
+| ESP32 Firmware | `WatcheRobot_esp32` | ESP32-S3 固件 | `main` |
+| STM32 Firmware | `WatcheRobot_stm32` | STM32F103 固件 | `dev` |
 
 ## 提交边界
 
-- ESP32 源码改动：进入 `WatcheRobot_esp32` 仓库单独提交。
-- STM32 源码改动：进入 `WatcheRobot_stm32` 仓库单独提交。
-- Skills、SkillHub、workspace 脚本和配置模板：进入本 meta repo 提交。
-- 每个人自己的 COM 口、盘符、临时日志和本机缓存：放在 `.codex/local/`，不要提交。
+- Workspace 脚本、`.agents/`、`.codex/` 模板、根 README 和子仓库引用：在根仓库提交。
+- App 客户端改动：进入 `WatcheRobot_app` 仓库单独提交。
+- 桌面客户端改动：进入 `WatcheRobot_client` 仓库单独提交。
+- 服务端改动：进入 `WatcheRobot_server` 仓库单独提交。
+- ESP32 固件改动：进入 `WatcheRobot_esp32` 仓库单独提交。
+- STM32 固件改动：进入 `WatcheRobot_stm32` 仓库单独提交。
+- 涉及多个子仓库的配套功能，分别在对应仓库提交，并在 commit body 中说明配套提交关系。
+- 每个人自己的 COM 口、盘符、临时日志、本机缓存和私有环境变量不要提交。
+
+## 初始化
+
+克隆根仓库后初始化所有子仓库：
+
+```powershell
+git submodule update --init --recursive
+```
+
+如果已经手动拉取了子仓库，可以先检查状态。提交根仓库整理改动时，需要把 `.gitmodules` 和对应子仓库 gitlink 一起纳入根仓库提交：
+
+```powershell
+yarn status
+```
 
 ## 常用命令
 
-查看三个仓库状态：
+查看所有仓库状态：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\status-all.ps1
+yarn status
+```
+
+拉取根仓库和子仓库。遇到 dirty working tree 时只会 fetch，避免覆盖本地改动：
+
+```powershell
+yarn pull
+```
+
+只 fetch 不 pull：
+
+```powershell
+yarn pull:fetch
 ```
 
 校验项目 skills：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1
-```
-
-拉取 meta repo 和两个子仓库：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\pull-all.ps1
+yarn skills:validate
 ```
 
 列出本机串口：
@@ -52,6 +91,46 @@ powershell -ExecutionPolicy Bypass -File .\scripts\pull-all.ps1
 ```powershell
 yarn ports
 ```
+
+## App 客户端
+
+```powershell
+yarn app:start
+yarn app:android
+yarn app:ios
+yarn app:lint
+yarn app:test
+```
+
+## 桌面客户端
+
+```powershell
+yarn desktop:dev
+yarn desktop:typecheck
+yarn desktop:build
+```
+
+## 服务端
+
+直接用当前 Python 环境启动：
+
+```powershell
+yarn server
+```
+
+使用服务端仓库自带的 Windows 检查脚本启动：
+
+```powershell
+yarn server:start:checked
+```
+
+运行服务端测试：
+
+```powershell
+yarn server:test
+```
+
+## 固件
 
 构建并烧录 STM32 Debug 固件：
 
@@ -84,12 +163,6 @@ yarn esp32:monitor COM23 -Raw
 ```
 
 配置 `.codex/local/device-map.toml` 后，`yarn stm32:monitor`、`yarn esp32` 和 `yarn esp32:monitor` 可以省略 COM 口。
-
-打开 SkillHub：
-
-```text
-.agents\skillhub\index.html
-```
 
 ## 设备映射
 

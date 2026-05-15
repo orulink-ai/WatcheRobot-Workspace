@@ -7,3 +7,18 @@
 	path = WatcheRobot_stm32
 	url = https://github.com/Ro-In-AI/watcherobot_stm32.git
 	branch = dev
+
+[submodule "WatcheRobot_app"]
+	path = WatcheRobot_app
+	url = https://github.com/Ro-In-AI/WatcheRobotAPP.git
+	branch = dev
+
+[submodule "WatcheRobot_server"]
+	path = WatcheRobot_server
+	url = https://github.com/Ro-In-AI/watcher-server.git
+	branch = main
+
+[submodule "WatcheRobot_client"]
+	path = WatcheRobot_client
+	url = https://github.com/ERRORIGHT-AI/watcher-desktop-app.git
+	branch = main

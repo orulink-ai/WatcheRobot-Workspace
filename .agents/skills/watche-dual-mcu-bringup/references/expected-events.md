@@ -2,10 +2,14 @@
 
 双串口会话完成后，需要解释日志时使用本文件。
 
+## 日志模式前提
+
+默认 STM32 `Debug` 固件是安静模式，可能没有 `STM32_OBS`。如果会话目标是诊断 STM32 UART2 RX、协议帧解析或 HELLO/ACK/NACK/FAULT 细节，应使用 `Engineering` preset 构建和烧录 STM32，例如给 helper 传 `-Stm32Preset Engineering`。
+
 ## 健康链路层级
 
 - `STM32_OBS evt=boot`
-  - STM32 新固件正在运行，且 `USART1` 日志可用。
+  - STM32 Engineering/Stress 固件正在运行，且 `USART1` 结构化观测日志可用。
 - `STM32_OBS evt=uart2_rx_arm`
   - STM32 已启用 `USART2 RX DMA + IDLE`。
 - `STM32_OBS evt=uart2_rx_preview`

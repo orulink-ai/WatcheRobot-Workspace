@@ -31,6 +31,9 @@
 
 ## 会话解释
 
+- 最新会话没有 `STM32_OBS`，但有 `=== STM32 CLI Ready ===` 或 `USART2 bring-up ready`
+  - 原因：STM32 可能烧录的是默认安静 `Debug` 固件。
+  - 修复：如果本次需要 STM32 结构化观测，使用 `-Stm32Preset Engineering` 重新构建、烧录并采集。
 - 最新会话只有 `STM32_OBS evt=stats event_count=0`
   - STM32 固件正在运行，但抓取窗口内没有 UART2 流量进入 DMA 回调。
 - 最新会话只有 ESP32 普通文本日志
