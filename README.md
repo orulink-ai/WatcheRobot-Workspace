@@ -60,6 +60,32 @@ git submodule update --init --recursive
 yarn status
 ```
 
+## 更新代码
+
+日常同步整个 workspace 时，优先使用项目脚本：
+
+```powershell
+yarn pull
+```
+
+`yarn pull` 会依次更新根仓库和 `WatcheRobot_app`、`WatcheRobot_client`、`WatcheRobot_server`、`WatcheRobot_esp32`、`WatcheRobot_stm32` 等子仓库。某个仓库存在未提交改动时，脚本只会执行 fetch，不会直接 pull，避免覆盖本地修改。
+
+只需要拉取远端信息、不合并代码时使用：
+
+```powershell
+yarn pull:fetch
+```
+
+注意：在根目录直接执行 `git pull` 只会更新 workspace/meta repo 本身，以及根仓库记录的子仓库 gitlink 指针；它不会自动把每个子仓库源码都更新到远端最新分支。
+
+如果需要让子仓库 checkout 到根仓库当前记录的固定提交，使用：
+
+```powershell
+git submodule update --init --recursive
+```
+
+如果需要让每个子仓库跟随各自配置分支更新到最新提交，使用 `yarn pull`。
+
 ## 常用命令
 
 查看所有仓库状态：
