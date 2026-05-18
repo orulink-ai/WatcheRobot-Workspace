@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$Device,
-    [switch]$NoLaunch
+    [switch]$NoLaunch,
+    [switch]$NoMetro
 )
 
 Set-StrictMode -Version Latest
@@ -24,6 +25,100 @@ if (-not (Test-Path (Join-Path $appRoot "node_modules\.bin\react-native.cmd"))) 
         exit $LASTEXITCODE
     }
 }
+
+function Test-TcpPort {
+    param([Parameter(Mandatory = $true)][int]$Port)
+
+    $client = [System.Net.Sockets.TcpClient]::new()
+    try {
+        $async = $client.BeginConnect("127.0.0.1", $Port, $null, $null)
+        if (-not $async.AsyncWaitHandle.WaitOne(500)) {
+            return $false
+        }
+
+        $client.EndConnect($async)
+        return $true
+    }
+    catch {
+        return $false
+    }
+    finally {
+        $client.Dispose()
+    }
+}
+
+function Wait-TcpPort {
+    param(
+        [Parameter(Mandatory = $true)][int]$Port,
+        [Parameter(Mandatory = $true)][int]$TimeoutSec,
+        [string]$ProcessName,
+        [System.Diagnostics.Process]$Process,
+        [string]$StdoutLog,
+        [string]$StderrLog
+    )
+
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        if (Test-TcpPort -Port $Port) {
+            return
+        }
+
+        if ($Process -and $Process.HasExited) {
+            $stdoutTail = if ($StdoutLog -and (Test-Path $StdoutLog)) {
+                (Get-Content -LiteralPath $StdoutLog -Tail 40) -join [Environment]::NewLine
+            }
+            else {
+                ""
+            }
+            $stderrTail = if ($StderrLog -and (Test-Path $StderrLog)) {
+                (Get-Content -LiteralPath $StderrLog -Tail 40) -join [Environment]::NewLine
+            }
+            else {
+                ""
+            }
+            throw "$ProcessName exited before tcp:$Port became ready. stdout=$StdoutLog stderr=$StderrLog`n$stdoutTail`n$stderrTail"
+        }
+
+        Start-Sleep -Milliseconds 500
+    }
+
+    throw "Timed out waiting for $ProcessName on tcp:$Port after ${TimeoutSec}s."
+}
+
+function Start-MetroIfNeeded {
+    if ($NoMetro) {
+        Write-Host "Metro   : skipped"
+        return
+    }
+
+    if (Test-TcpPort -Port 8081) {
+        Write-Host "Metro   : already running on 127.0.0.1:8081"
+        return
+    }
+
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $stdoutLog = Join-Path $env:TEMP "watcher-app-metro-$timestamp.out.log"
+    $stderrLog = Join-Path $env:TEMP "watcher-app-metro-$timestamp.err.log"
+    $yarnCommand = Get-Command "yarn.cmd" -ErrorAction SilentlyContinue
+    if (-not $yarnCommand) {
+        $yarnCommand = Get-Command "yarn" -ErrorAction Stop
+    }
+    $yarn = $yarnCommand.Source
+
+    Write-Host "Metro   : starting react-native start"
+    $metro = Start-Process -FilePath $yarn `
+        -ArgumentList @("--cwd", $appRoot, "start") `
+        -WindowStyle Hidden `
+        -PassThru `
+        -RedirectStandardOutput $stdoutLog `
+        -RedirectStandardError $stderrLog
+
+    Wait-TcpPort -Port 8081 -TimeoutSec 45 -ProcessName "Metro" -Process $metro -StdoutLog $stdoutLog -StderrLog $stderrLog
+    Write-Host "Metro   : ready on 127.0.0.1:8081 (pid=$($metro.Id))"
+    Write-Host "MetroLog: $stdoutLog"
+}
+
+Start-MetroIfNeeded
 
 if (-not $Device) {
     $devices = @(

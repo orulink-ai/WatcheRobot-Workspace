@@ -19,6 +19,7 @@
     "app:lint": "yarn --cwd WatcheRobot_app lint",
     "app:test": "yarn --cwd WatcheRobot_app test",
     "desktop:dev": "npm --prefix \"WatcheRobot_client/Watcher Desktop App\" run dev",
+    "desktop:server": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop-server.ps1",
     "desktop:build": "npm --prefix \"WatcheRobot_client/Watcher Desktop App\" run build",
     "desktop:typecheck": "npm --prefix \"WatcheRobot_client/Watcher Desktop App\" run typecheck",
     "server": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-server.ps1",
