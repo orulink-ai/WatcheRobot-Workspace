@@ -123,6 +123,47 @@ function Resolve-EspIdfBootstrapScript {
     throw "ESP-IDF bootstrap script was not found. Checked: $initializeScript, $exportScript"
 }
 
+function Test-EspIdfPythonEnv {
+    param([string]$PythonEnvPath)
+
+    if (-not $PythonEnvPath) { return $false }
+
+    $pythonPath = Join-Path $PythonEnvPath "Scripts\python.exe"
+    if (-not (Test-Path $pythonPath)) { return $false }
+
+    & $pythonPath -c "import esp_idf_monitor" 2>$null
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Resolve-EspIdfPythonEnvPath {
+    if ($env:IDF_PYTHON_ENV_PATH -and (Test-EspIdfPythonEnv $env:IDF_PYTHON_ENV_PATH)) {
+        return (Resolve-Path $env:IDF_PYTHON_ENV_PATH).Path
+    }
+
+    $preferred = "C:\Espressif\python_env\idf5.2_py3.11_env"
+    if (Test-EspIdfPythonEnv $preferred) { return $preferred }
+
+    $pythonEnvRoot = "C:\Espressif\python_env"
+    if (Test-Path $pythonEnvRoot) {
+        $candidate = Get-ChildItem -Path $pythonEnvRoot -Directory -Filter "idf5.2_py*_env" -ErrorAction SilentlyContinue |
+            Where-Object { Test-EspIdfPythonEnv $_.FullName } |
+            Sort-Object Name |
+            Select-Object -First 1
+        if ($candidate) { return $candidate.FullName }
+    }
+
+    return $null
+}
+
+function Clear-ProblemIdfRegistryEnv {
+    if ($env:IDF_COMPONENT_REGISTRY_URL -like "file:///C:/Espressif/registry*") {
+        Remove-Item Env:\IDF_COMPONENT_REGISTRY_URL -ErrorAction SilentlyContinue
+    }
+    if ($env:IDF_COMPONENT_STORAGE_URL -like "file:///C:/Espressif/registry*") {
+        Remove-Item Env:\IDF_COMPONENT_STORAGE_URL -ErrorAction SilentlyContinue
+    }
+}
+
 function Invoke-Checked {
     param(
         [Parameter(Mandatory = $true)][string]$FilePath,
@@ -155,6 +196,7 @@ function Invoke-Esp32Idf {
     $resolvedBuildPath = Resolve-OptionalPath -BasePath $resolvedProjectPath -RequestedPath $BuildPath
     $idfPath = Resolve-EspIdfPath -ResolvedProjectPath $resolvedProjectPath -ResolvedBuildPath $resolvedBuildPath
     $idfBootstrapScript = Resolve-EspIdfBootstrapScript -ResolvedIdfPath $idfPath
+    $idfPythonEnvPath = Resolve-EspIdfPythonEnvPath
 
     $commandArgs = @()
     if ($resolvedBuildPath) {
@@ -166,7 +208,14 @@ function Invoke-Esp32Idf {
     Write-Host ">> idf.py $($commandArgs -join ' ')"
     Push-Location $resolvedProjectPath
     try {
+        Clear-ProblemIdfRegistryEnv
         $env:IDF_PATH = $idfPath
+        if ($idfPythonEnvPath) {
+            $env:IDF_PYTHON_ENV_PATH = $idfPythonEnvPath
+        }
+        if (-not (Get-Variable -Name IsWindows -ErrorAction SilentlyContinue)) {
+            $IsWindows = $true
+        }
         . $idfBootstrapScript | Out-Null
         if (-not (Get-Command "idf.py" -ErrorAction SilentlyContinue)) {
             throw "ESP-IDF was loaded, but idf.py is unavailable."
@@ -382,7 +431,8 @@ function Write-CodexDeviceMap {
         $lines += ""
     }
 
-    Set-Content -LiteralPath $Path -Value $lines -Encoding UTF8
+    $content = ($lines -join [Environment]::NewLine) + [Environment]::NewLine
+    [System.IO.File]::WriteAllText($Path, $content, [System.Text.UTF8Encoding]::new($false))
 }
 
 function Update-CodexDeviceMapPorts {
@@ -471,22 +521,24 @@ if (-not (Test-Path $Stm32RepoRoot)) {
     throw "STM32 repo root not found: $Stm32RepoRoot. Pass -Stm32RepoRoot explicitly."
 }
 
+$resolvedDeviceMapPath = Get-CodexDeviceMapPath -RepoRoot $EspRepoRoot -DeviceMapPath $env:CODEX_DEVICE_MAP_PATH
+
 if (($EspPort -or $Stm32Port) -and -not $NoSavePorts) {
-    Update-CodexDeviceMapPorts -RepoRoot $EspRepoRoot -DeviceMapPath $env:CODEX_DEVICE_MAP_PATH -EspAlias $EspAlias -EspPort $EspPort -Stm32Alias $Stm32Alias -Stm32Port $Stm32Port
+    Update-CodexDeviceMapPorts -RepoRoot $EspRepoRoot -DeviceMapPath $resolvedDeviceMapPath -EspAlias $EspAlias -EspPort $EspPort -Stm32Alias $Stm32Alias -Stm32Port $Stm32Port
 }
 
 if ($EspPort) {
     $espMapping = [pscustomobject]@{ Alias = $EspAlias; Firmware = "s3"; Port = $EspPort; SourcePath = "argument" }
 }
 else {
-    $espMapping = Resolve-CodexDeviceMapping -Alias $EspAlias -RepoRoot $EspRepoRoot -Firmware "s3" -DeviceMapPath $env:CODEX_DEVICE_MAP_PATH
+    $espMapping = Resolve-CodexDeviceMapping -Alias $EspAlias -RepoRoot $EspRepoRoot -Firmware "s3" -DeviceMapPath $resolvedDeviceMapPath
 }
 
 if ($Stm32Port) {
     $stm32Mapping = [pscustomobject]@{ Alias = $Stm32Alias; Firmware = "stm32"; Port = $Stm32Port; SourcePath = "argument" }
 }
 else {
-    $stm32Mapping = Resolve-CodexDeviceMapping -Alias $Stm32Alias -RepoRoot $EspRepoRoot -Firmware "stm32" -DeviceMapPath $env:CODEX_DEVICE_MAP_PATH
+    $stm32Mapping = Resolve-CodexDeviceMapping -Alias $Stm32Alias -RepoRoot $EspRepoRoot -Firmware "stm32" -DeviceMapPath $resolvedDeviceMapPath
 }
 
 if ($espMapping.Port -eq $stm32Mapping.Port) {
@@ -500,11 +552,15 @@ $cmakePath = Resolve-FirstAvailablePath -Candidates @(
 
 $ninjaPath = Resolve-FirstAvailablePath -Candidates @(
     "ninja",
+    "C:\Espressif\tools\ninja\1.11.1\ninja.exe",
+    "$env:USERPROFILE\.espressif\tools\ninja\1.11.1\ninja.exe",
     "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe"
 )
 
 $openOcdPath = Resolve-FirstAvailablePath -Candidates @(
-    "openocd"
+    "openocd",
+    "C:\Espressif\tools\openocd-esp32\v0.12.0-esp32-20230921\openocd-esp32\bin\openocd.exe",
+    "$env:USERPROFILE\.espressif\tools\openocd-esp32\v0.12.0-esp32-20230921\openocd-esp32\bin\openocd.exe"
 )
 
 $espProjectRoot = Join-Path $EspRepoRoot "firmware\s3"
@@ -589,6 +645,7 @@ if ($RestartEsp32) {
 if (-not $SkipSession) {
     Invoke-Checked -FilePath "python" -Arguments @(
         $sessionScript,
+        "--device-map-path", $resolvedDeviceMapPath,
         "--esp-alias", $EspAlias,
         "--stm32-alias", $Stm32Alias,
         "--feature", $Feature,
