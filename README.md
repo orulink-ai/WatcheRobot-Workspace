@@ -190,6 +190,34 @@ yarn esp32:monitor COM23 -Raw
 
 配置 `.codex/local/device-map.toml` 后，`yarn stm32:monitor`、`yarn esp32` 和 `yarn esp32:monitor` 可以省略 COM 口。
 
+### SD 卡动画资源
+
+把最新生成的 ESP32-S3 AnimPack 资源同步到已插入电脑的 SD 卡：
+
+```powershell
+yarn sd
+```
+
+脚本会自动选择唯一已挂载的可移动盘，并把最新 `WatcheRobot_esp32/firmware/s3/release/*/sdcard/anim` 镜像到 `<sd-root>/anim`。如果电脑上有多个可移动盘，需要显式指定目标盘：
+
+```powershell
+yarn sd F:
+```
+
+同步前只做检查、不写入文件：
+
+```powershell
+yarn sd:check
+```
+
+需要先重新生成 AnimPack 再同步时：
+
+```powershell
+yarn sd:generate F:
+```
+
+详细说明见 [docs/sd-card-assets.md](docs/sd-card-assets.md)。
+
 ## 设备映射
 
 复制 `.codex/device-map.example.toml` 到 `.codex/local/device-map.toml`，按本机实际端口填写：
