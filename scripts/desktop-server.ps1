@@ -125,6 +125,41 @@ function Wait-ForWatcherDesktopExit {
     }
 }
 
+function Get-WatcherServerPython {
+    $isWindows = $env:OS -eq "Windows_NT"
+    $isMacOS = -not $isWindows -and $PSVersionTable.ContainsKey("Platform") -and $PSVersionTable.Platform -eq "Unix" -and (uname -s) -eq "Darwin"
+
+    $platformResourceName = if ($isWindows) {
+        "win32-x64"
+    }
+    elseif ($isMacOS) {
+        "darwin-arm64"
+    }
+    else {
+        "linux-x64"
+    }
+
+    $configuredVenv = [string]$env:WATCHER_SERVER_DEV_VENV
+    $venvRoot = if ($configuredVenv.Trim()) {
+        $configuredVenv.Trim()
+    }
+    else {
+        Join-Path $serverRoot ".venv-dev-$platformResourceName"
+    }
+    $venvPython = if ($isWindows) {
+        Join-Path $venvRoot "Scripts\python.exe"
+    }
+    else {
+        Join-Path $venvRoot "bin/python"
+    }
+
+    if (Test-Path $venvPython) {
+        return (Resolve-Path -LiteralPath $venvPython).Path
+    }
+
+    return (Get-Command "python" -ErrorAction Stop).Source
+}
+
 $startedServer = $null
 $exitCode = 0
 
@@ -136,7 +171,7 @@ try {
         $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
         $stdoutLog = Join-Path $env:TEMP "watcher-server-desktop-$timestamp.out.log"
         $stderrLog = Join-Path $env:TEMP "watcher-server-desktop-$timestamp.err.log"
-        $python = (Get-Command "python" -ErrorAction Stop).Source
+        $python = Get-WatcherServerPython
 
         Write-Host "Starting watcher-server..."
         $startedServer = Start-Process -FilePath $python `
