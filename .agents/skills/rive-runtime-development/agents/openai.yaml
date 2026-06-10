@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rive Runtime Development"
+  short_description: "Integrate Rive animations in apps."
+  default_prompt: "Use $rive-runtime-development to integrate a Rive animation or state machine into the current app."
