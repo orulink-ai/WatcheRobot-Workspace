@@ -12,6 +12,14 @@
 *.tmp
 *.bak
 
+# Local generated exports and temporary pull worktrees
+.codex-temp/
+downloads/
+output/
+outputs/
+_tmp_pull*/
+feishu_watcherobot_tables*.tsv.md
+
 # OS/editor noise
 .DS_Store
 Thumbs.db

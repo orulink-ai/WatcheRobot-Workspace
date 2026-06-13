@@ -12,6 +12,58 @@ $workspaceRoot = Split-Path -Parent $PSScriptRoot
 $serverRoot = Join-Path $workspaceRoot "WatcheRobot_server"
 $desktopRoot = Join-Path $workspaceRoot "WatcheRobot_client\Watcher Desktop App"
 
+function Add-PathIfMissing {
+    param([Parameter(Mandatory=$true)][string]$PathToAdd)
+
+    $pathSegments = $env:PATH -split ';'
+    if ($pathSegments -notcontains $PathToAdd) {
+        $env:PATH = "$PathToAdd;$env:PATH"
+    }
+}
+
+function Ensure-Cargo {
+    $cargoBin = Join-Path $env:USERPROFILE ".cargo\bin"
+    if (Test-Path $cargoBin) {
+        Add-PathIfMissing $cargoBin
+    }
+
+    if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
+        throw "Cargo not found. Please install Rust (e.g. 'winget install Rustlang.Rustup') and reopen the terminal."
+    }
+}
+
+function Ensure-VSLinker {
+    if (Get-Command link.exe -ErrorAction SilentlyContinue) {
+        return
+    }
+
+    $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path $vswhere) {
+        $installations = & $vswhere -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json | ConvertFrom-Json -ErrorAction SilentlyContinue
+        if ($installations) {
+            $installPath = $installations[0].installationPath
+            $toolchainRoot = Join-Path (Join-Path $installPath "VC\Tools\MSVC") "*"
+            $latestToolchain = Get-ChildItem -Path $toolchainRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1
+            if ($latestToolchain) {
+                foreach ($arch in @("Hostx64\x64", "Hostx64\x86", "Hostx86\x64", "Hostx86\x86")) {
+                    $candidate = Join-Path $latestToolchain.FullName ("bin\" + $arch + "\link.exe")
+                    if (Test-Path $candidate) {
+                        Add-PathIfMissing (Split-Path $candidate)
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    if (-not (Get-Command link.exe -ErrorAction SilentlyContinue)) {
+        throw "MSVC linker not found. Please install Visual Studio Build Tools with C++ build tools (MSVC)."
+    }
+}
+
+Ensure-Cargo
+Ensure-VSLinker
+
 if (-not (Test-Path $serverRoot)) {
     throw "Server repository not found: $serverRoot"
 }

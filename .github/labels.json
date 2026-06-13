@@ -1,0 +1,92 @@
+[
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something broken"
+  },
+  {
+    "name": "feature",
+    "color": "a2eeef",
+    "description": "New capability request"
+  },
+  {
+    "name": "docs",
+    "color": "0075ca",
+    "description": "Documentation work"
+  },
+  {
+    "name": "app",
+    "color": "7057ff",
+    "description": "Mobile app scope"
+  },
+  {
+    "name": "desktop",
+    "color": "5319e7",
+    "description": "Desktop client scope"
+  },
+  {
+    "name": "server",
+    "color": "006b75",
+    "description": "Server / AI runtime scope"
+  },
+  {
+    "name": "firmware",
+    "color": "fbca04",
+    "description": "ESP32 or STM32 firmware scope"
+  },
+  {
+    "name": "esp32",
+    "color": "f9d0c4",
+    "description": "ESP32-specific scope"
+  },
+  {
+    "name": "stm32",
+    "color": "c2e0c6",
+    "description": "STM32-specific scope"
+  },
+  {
+    "name": "hardware",
+    "color": "bfd4f2",
+    "description": "Hardware / structure / assembly scope"
+  },
+  {
+    "name": "examples",
+    "color": "c5def5",
+    "description": "Example code and smoke-test assets"
+  },
+  {
+    "name": "release",
+    "color": "fef2c0",
+    "description": "Release notes, packages, checksums, and publication"
+  },
+  {
+    "name": "connection",
+    "color": "1d76db",
+    "description": "BLE, Wi-Fi, provisioning, discovery"
+  },
+  {
+    "name": "security",
+    "color": "b60205",
+    "description": "Security or privacy-sensitive item"
+  },
+  {
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Suitable for first-time contributors"
+  },
+  {
+    "name": "help wanted",
+    "color": "008672",
+    "description": "Maintainers would welcome outside contribution"
+  },
+  {
+    "name": "blocked: decision",
+    "color": "e4e669",
+    "description": "Waiting for product / legal / maintainer decision"
+  },
+  {
+    "name": "blocked: hardware",
+    "color": "d4c5f9",
+    "description": "Waiting for physical-device verification"
+  }
+]

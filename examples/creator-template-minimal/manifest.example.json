@@ -1,0 +1,16 @@
+{
+  "name": "example-creator-pack",
+  "version": "0.1.0",
+  "target": "WatcheRobot",
+  "author": "TODO",
+  "license": "TBD",
+  "contents": [
+    "expressions",
+    "motion"
+  ],
+  "tested_with": {
+    "esp32_firmware": "TBD",
+    "desktop": "TBD",
+    "app": "TBD"
+  }
+}

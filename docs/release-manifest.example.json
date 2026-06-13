@@ -1,0 +1,41 @@
+{
+  "version": "v0.1.0-alpha",
+  "release_date": "TBD",
+  "release_url": "TBD",
+  "components": {
+    "workspace": "TBD",
+    "app": "TBD",
+    "desktop": "TBD",
+    "server": "TBD",
+    "esp32": "TBD",
+    "stm32": "TBD"
+  },
+  "artifacts": [
+    {
+      "name": "desktop-windows-installer",
+      "type": "desktop-installer",
+      "path_or_url": "TBD",
+      "sha256": "TBD",
+      "required": true
+    },
+    {
+      "name": "esp32-firmware-package",
+      "type": "firmware",
+      "path_or_url": "TBD",
+      "sha256": "TBD",
+      "required": true
+    },
+    {
+      "name": "stm32-firmware-package",
+      "type": "firmware",
+      "path_or_url": "TBD",
+      "sha256": "TBD",
+      "required": false
+    }
+  ],
+  "checks": {
+    "readiness_script": "powershell -ExecutionPolicy Bypass -File .\\scripts\\check-open-source-readiness.ps1 -SkipGradle",
+    "hardware_smoke": "TBD",
+    "clean_machine": "TBD"
+  }
+}
