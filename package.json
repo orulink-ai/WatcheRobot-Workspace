@@ -33,6 +33,14 @@
     "server:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-server.ps1",
     "server:start:checked": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-server.ps1 -UseStartScript",
     "server:test": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-server.ps1",
+    "appcenter:sample": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/app-center-sample-server.ps1",
+    "appcenter:sample:dryrun": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/app-center-sample-server.ps1 -DryRun",
+    "appcenter:prepare": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-app-center-sample-url.ps1",
+    "appcenter:prepare:dryrun": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-app-center-sample-url.ps1 -DryRun",
+    "appcenter:url": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/set-app-center-url.ps1",
+    "appcenter:validate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-app-center-catalog.ps1",
+    "appcenter:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-app-center-sample-server.ps1",
+    "appcenter:check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-app-center-local.ps1",
     "ports": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/list-ports.ps1"
   }
 }
