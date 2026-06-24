@@ -1,0 +1,62 @@
+flowchart LR
+    boot["Boot / 系统启动"] --> main["app_main.c<br/>硬件初始化 / APP 注册 / 主循环"]
+    main --> runtime["watcher_app_runtime<br/>APP 生命周期调度"]
+
+    runtime --> launcher["Launcher<br/>本地固定功能入口"]
+    runtime --> resource["app_resource_manager<br/>进入申请资源 / 退出释放资源"]
+    runtime --> input["app_input_router<br/>触摸选择 / 滚轮解耦"]
+    runtime --> exit["local_exit_overlay<br/>统一退出浮层"]
+
+    launcher --> ble["BLE App<br/>蓝牙连接 / 手机控制"]
+    launcher --> provision["Provision App<br/>BLE 配网 / Wi-Fi 凭据"]
+    launcher --> client["Client App<br/>Wi-Fi Discovery / WebSocket"]
+    launcher --> voice["Voice App<br/>录音 / 语音 / TTS"]
+    launcher --> center["App.Center<br/>应用列表 / 下载 / 安装 / 打开 / 卸载"]
+
+    center --> repo["App Repository<br/>apps.json / manifest / icon / package"]
+    center --> cache["app_asset_cache<br/>图标 / 预览图 / 资源缓存"]
+    center --> install["app_install_manager<br/>下载 / 安装 / 更新 / 卸载"]
+    install --> verify["app_package_verifier<br/>hash / 签名 / 兼容性"]
+    verify --> store["installed_app_store<br/>installed_apps.json"]
+    store --> downloaded["Downloaded App Shell<br/>manifest 解析 / 轻量应用壳"]
+    downloaded --> remote["Remote App<br/>ESP-NOW 遥控接收"]
+
+    center --> installed{"应用是否已安装?"}
+    installed -->|未安装| download["Download<br/>下载应用包"]
+    download --> install
+    installed -->|已安装| open["Open<br/>打开应用"]
+    installed -->|已安装| uninstall["Uninstall<br/>卸载应用"]
+    uninstall --> deletepkg["Delete Local Package<br/>删除本地应用包"]
+    uninstall --> clearstate["Clear Install Record<br/>清除安装状态"]
+    deletepkg --> store
+    clearstate --> store
+
+    ble --> bleSvc["ble_control_service<br/>BLE 控制命令"]
+    provision --> provSvc["ble_provision_service<br/>配网 / NVS 凭据"]
+    client --> clientSvc["client_transport_service<br/>Discovery / WebSocket"]
+    voice --> voiceSvc["voice_session_service<br/>录音 / 云语音"]
+    remote --> remoteSvc["remote_runtime_service<br/>ESP-NOW 运行"]
+
+    bleSvc --> control["control_ingress<br/>统一动作控制入口"]
+    clientSvc --> control
+    remoteSvc --> control
+    control --> mcu["机器人执行层<br/>动作 / 表情 / MCU"]
+
+    resource -.控制资源.-> ble
+    resource -.控制资源.-> provision
+    resource -.控制资源.-> client
+    resource -.控制资源.-> voice
+    resource -.控制资源.-> center
+    resource -.控制资源.-> remote
+
+    classDef system fill:#eaf1ff,stroke:#5875c9,color:#17223b;
+    classDef app fill:#e9fff4,stroke:#3d9b72,color:#132b20;
+    classDef store fill:#fff7d8,stroke:#c49a2c,color:#3b2a05;
+    classDef service fill:#f2eaff,stroke:#8162c8,color:#24163f;
+    classDef control fill:#ffecec,stroke:#c86a6a,color:#401818;
+
+    class boot,main,runtime,input,exit,resource,launcher system;
+    class ble,provision,client,voice,center,downloaded,remote app;
+    class repo,cache,install,verify,store,installed,download,open,uninstall,deletepkg,clearstate store;
+    class bleSvc,provSvc,clientSvc,voiceSvc,remoteSvc service;
+    class control,mcu control;
