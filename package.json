@@ -41,6 +41,10 @@
     "appcenter:validate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-app-center-catalog.ps1",
     "appcenter:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-app-center-sample-server.ps1",
     "appcenter:check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-app-center-local.ps1",
+    "appcenter:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-app-center-stage2.ps1",
+    "appcenter:verify:run": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-app-center-stage2.ps1 -RunAutomated",
+    "appcenter:verify:pc:plan": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-app-center-stage2.ps1 -SkipEsp32Build",
+    "appcenter:verify:pc": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-app-center-stage2.ps1 -RunAutomated -SkipEsp32Build",
     "ports": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/list-ports.ps1"
   }
 }

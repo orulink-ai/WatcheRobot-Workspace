@@ -43,6 +43,23 @@ function Get-JsonString {
     return $null
 }
 
+function Get-JsonNumber {
+    param(
+        [object]$Object,
+        [string[]]$Keys
+    )
+
+    foreach ($key in $Keys) {
+        if ($null -ne $Object.PSObject.Properties[$key]) {
+            $value = $Object.PSObject.Properties[$key].Value
+            if ($value -is [int] -or $value -is [long] -or $value -is [double]) {
+                return $value
+            }
+        }
+    }
+    return $null
+}
+
 $catalog = Read-JsonFile $appsPath
 $apps = $null
 if ($catalog -is [array]) {
@@ -124,9 +141,33 @@ foreach ($app in $apps) {
         }
 
         $manifest = Read-JsonFile $packagePath
+        $manifestVersion = Get-JsonNumber $manifest @("manifestVersion", "manifest_version")
+        $manifestId = Get-JsonString $manifest @("id", "appId", "app_id")
         $manifestName = Get-JsonString $manifest @("name", "title", "appName")
+        $manifestPackageVersion = Get-JsonString $manifest @("version", "fwVersion", "firmwareVersion")
+        $signature = $null
+        if ($null -ne $manifest.PSObject.Properties["signature"]) {
+            $signature = $manifest.PSObject.Properties["signature"].Value
+        }
+
+        if ($null -eq $manifestVersion) {
+            throw "Package manifest for '$name' is missing manifestVersion/manifest_version: $packagePath"
+        }
+        if ($id -and $manifestId -and $manifestId -ne $id) {
+            throw "Package manifest id '$manifestId' does not match catalog id '$id': $packagePath"
+        }
         if (-not $manifestName) {
             throw "Package manifest for '$name' is missing name/title/appName: $packagePath"
+        }
+        if ($manifestPackageVersion -and $null -ne $app.PSObject.Properties["version"] -and $manifestPackageVersion -ne $app.version) {
+            throw "Package manifest version '$manifestPackageVersion' does not match catalog version '$($app.version)': $packagePath"
+        }
+        if ($null -eq $signature -or $signature -isnot [pscustomobject]) {
+            throw "Package manifest for '$name' must declare signature metadata, at least unsigned-dev for local samples: $packagePath"
+        }
+        $signatureAlgorithm = Get-JsonString $signature @("algorithm", "alg", "type")
+        if (-not $signatureAlgorithm) {
+            throw "Package manifest for '$name' signature is missing algorithm/alg/type: $packagePath"
         }
     }
 
