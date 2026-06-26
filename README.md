@@ -216,6 +216,29 @@ yarn sd:check
 yarn sd:generate F:
 ```
 
+## App.Center Stage 2 verification
+
+Use these commands from the workspace root when reviewing the App.Center app-package workflow:
+
+```powershell
+yarn appcenter:verify
+```
+
+Dry-run only. Prints the full verification plan and the manual evidence template.
+
+```powershell
+yarn appcenter:verify:run
+```
+
+Runs the automated desktop, server, catalog, and ESP32 build checks. Manual device and signing evidence is still required for final acceptance.
+
+```powershell
+yarn appcenter:verify:pc:plan
+yarn appcenter:verify:pc
+```
+
+PC-side plan/checks only. These skip the ESP32 build and cannot be used as complete `100 / 100` acceptance evidence.
+
 详细说明见 [docs/sd-card-assets.md](docs/sd-card-assets.md)。
 
 ## 设备映射
