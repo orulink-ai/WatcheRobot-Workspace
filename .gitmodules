@@ -15,7 +15,7 @@
 
 [submodule "WatcheRobot_server"]
 	path = WatcheRobot_server
-	url = https://github.com/Ro-In-AI/watcher-server.git
+	url = https://github.com/orulink-ai/WatcheRobot_server.git
 	branch = main
 
 [submodule "WatcheRobot_client"]
